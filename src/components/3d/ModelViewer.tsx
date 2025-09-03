@@ -189,7 +189,7 @@ export const ModelViewer = ({ modelPath, title, className }: ModelViewerProps) =
 
         {!hasError ? (
           <Canvas
-            camera={{ position: [0, 0, 8], fov: 60 }}
+            camera={{ position: [0, 0, 15], fov: 45 }}
             style={{ background: 'linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)))' }}
             onError={() => setHasError(true)}
           >
@@ -208,8 +208,8 @@ export const ModelViewer = ({ modelPath, title, className }: ModelViewerProps) =
               enablePan={true} 
               enableZoom={true} 
               enableRotate={true}
-              minDistance={4}
-              maxDistance={15}
+              minDistance={8}
+              maxDistance={25}
               autoRotate={autoRotate}
               autoRotateSpeed={0.3}
               panSpeed={0.8}

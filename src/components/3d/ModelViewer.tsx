@@ -1,17 +1,20 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Environment, ContactShadows, PresentationControls, Text, Box } from '@react-three/drei';
 import { Card } from '@/components/ui/card';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { Loader2, AlertCircle, Maximize2, RotateCcw, Sun, Moon } from 'lucide-react';
 
 interface ModelProps {
   url: string;
+  scale?: number;
 }
 
-const Model = ({ url }: ModelProps) => {
+const Model = ({ url, scale = 1 }: ModelProps) => {
   try {
     const { scene } = useGLTF(url);
-    return <primitive object={scene} scale={1.5} />;
+    return <primitive object={scene} scale={scale} />;
   } catch (error) {
     // Fallback placeholder when model fails to load
     return (
@@ -62,43 +65,156 @@ const ModelError = () => (
 
 export const ModelViewer = ({ modelPath, title, className }: ModelViewerProps) => {
   const [hasError, setHasError] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [lightingIntensity, setLightingIntensity] = useState([0.6]);
+  const [modelScale, setModelScale] = useState([1]);
+  const [environment, setEnvironment] = useState<'city' | 'studio' | 'sunset' | 'dawn'>('city');
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement && containerRef.current) {
+      containerRef.current.requestFullscreen();
+    } else if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+  };
+
+  const resetView = () => {
+    setAutoRotate(true);
+    setLightingIntensity([0.6]);
+    setModelScale([1]);
+    setEnvironment('city');
+  };
 
   return (
     <Card className={`overflow-hidden ${className}`}>
-      <div className="h-[500px] md:h-[600px] lg:h-[700px] w-full relative">
+      <div 
+        ref={containerRef}
+        className={`relative ${isFullscreen ? 'h-screen w-screen' : 'h-[500px] md:h-[600px] lg:h-[700px]'} w-full`}
+      >
+        {/* Control Panel */}
+        <div className="absolute top-4 left-4 z-10 bg-background/90 backdrop-blur-sm rounded-lg p-4 space-y-4 shadow-lg max-w-xs">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleFullscreen}
+              className="flex-1"
+            >
+              <Maximize2 className="h-4 w-4 mr-1" />
+              Fullscreen
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetView}
+            >
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                Auto Rotate
+              </label>
+              <Button
+                variant={autoRotate ? "default" : "outline"}
+                size="sm"
+                onClick={() => setAutoRotate(!autoRotate)}
+                className="w-full"
+              >
+                {autoRotate ? 'On' : 'Off'}
+              </Button>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                Lighting: {lightingIntensity[0].toFixed(1)}
+              </label>
+              <Slider
+                value={lightingIntensity}
+                onValueChange={setLightingIntensity}
+                max={2}
+                min={0.1}
+                step={0.1}
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                Scale: {modelScale[0].toFixed(1)}x
+              </label>
+              <Slider
+                value={modelScale}
+                onValueChange={setModelScale}
+                max={3}
+                min={0.5}
+                step={0.1}
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                Environment
+              </label>
+              <div className="grid grid-cols-2 gap-1">
+                {(['city', 'studio', 'sunset', 'dawn'] as const).map((env) => (
+                  <Button
+                    key={env}
+                    variant={environment === env ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setEnvironment(env)}
+                    className="text-xs capitalize"
+                  >
+                    {env}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {!hasError ? (
           <Canvas
-            camera={{ position: [0, 0, 5], fov: 75 }}
+            camera={{ position: [0, 0, 8], fov: 60 }}
             style={{ background: 'linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)))' }}
             onError={() => setHasError(true)}
           >
-            <ambientLight intensity={0.4} />
-            <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
-            <pointLight position={[-10, -10, -10]} intensity={0.5} />
+            <ambientLight intensity={lightingIntensity[0] * 0.4} />
+            <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={lightingIntensity[0]} />
+            <pointLight position={[-10, -10, -10]} intensity={lightingIntensity[0] * 0.5} />
+            <directionalLight position={[5, 5, 5]} intensity={lightingIntensity[0] * 0.8} />
             
             <Suspense fallback={null}>
-              <PresentationControls
-                global
-                config={{ mass: 2, tension: 500 }}
-                snap={{ mass: 4, tension: 1500 }}
-                rotation={[0, 0.3, 0]}
-                polar={[-Math.PI / 3, Math.PI / 3]}
-                azimuth={[-Math.PI / 1.4, Math.PI / 2]}
-              >
-                <Model url={modelPath} />
-              </PresentationControls>
-              <ContactShadows position={[0, -1.4, 0]} opacity={0.75} scale={10} blur={2.5} far={4} />
-              <Environment preset="city" />
+              <Model url={modelPath} scale={modelScale[0]} />
+              <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={10} blur={2.5} far={4} />
+              <Environment preset={environment} />
             </Suspense>
             
             <OrbitControls 
-              enablePan={false} 
+              enablePan={true} 
               enableZoom={true} 
               enableRotate={true}
-              minDistance={3}
-              maxDistance={8}
-              autoRotate
-              autoRotateSpeed={0.5}
+              minDistance={4}
+              maxDistance={15}
+              autoRotate={autoRotate}
+              autoRotateSpeed={0.3}
+              panSpeed={0.8}
+              rotateSpeed={0.8}
+              zoomSpeed={1.2}
             />
           </Canvas>
         ) : (

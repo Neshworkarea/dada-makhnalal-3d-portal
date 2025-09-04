@@ -32,85 +32,113 @@ export const ModelDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <Button variant="ghost" size="sm" asChild className="mb-4">
-            <Link to="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Gallery
-            </Link>
-          </Button>
+      <div className="container mx-auto px-4 py-6">
+        <Button variant="ghost" size="sm" asChild className="mb-6">
+          <Link to="/">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Gallery
+          </Link>
+        </Button>
+        
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <Badge className="bg-cultural-gold text-cultural-gold-foreground">
+              <Tag className="mr-1 h-3 w-3" />
+              {model.category}
+            </Badge>
+            <Badge variant="outline" className="text-muted-foreground">
+              <MapPin className="mr-1 h-3 w-3" />
+              {model.location}
+            </Badge>
+          </div>
           
-          <div className="flex flex-col lg:flex-row lg:items-start gap-8">
-            <div className="lg:flex-1">
-              <div className="mb-6">
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <Badge className="bg-cultural-gold text-cultural-gold-foreground">
-                    <Tag className="mr-1 h-3 w-3" />
-                    {model.category}
-                  </Badge>
-                  <Badge variant="outline" className="text-muted-foreground">
-                    <MapPin className="mr-1 h-3 w-3" />
-                    {model.location}
-                  </Badge>
-                </div>
-                
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                  {model.title}
-                </h1>
-                
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  {model.description}
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            {model.title}
+          </h1>
+          
+          <p className="text-lg text-muted-foreground leading-relaxed max-w-4xl">
+            {model.description}
+          </p>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+          {/* 3D Viewer - Takes up most space */}
+          <div className="xl:col-span-3">
+            <ModelViewer 
+              modelPath={model.modelPath}
+              title={model.title}
+              className="shadow-cultural h-[600px] md:h-[700px]"
+            />
+          </div>
+
+          {/* Sidebar */}
+          <div className="xl:col-span-1 space-y-6">
+            {/* QR Code */}
+            <QRCodeComponent 
+              value={currentUrl}
+              title="Model QR Code"
+              className="w-full"
+            />
+            
+            {/* About Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">About this Model</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Explore the detailed 3D representation of {model.title} with interactive viewing capabilities and comprehensive information.
                 </p>
-              </div>
-
-              <ModelViewer 
-                modelPath={model.modelPath}
-                title={model.title}
-                className="shadow-cultural"
-              />
-            </div>
-
-            <div className="lg:w-80 lg:shrink-0">
-              <div className="sticky top-24">
-                <QRCodeComponent 
-                  value={currentUrl}
-                  title="Share this model"
-                  className="w-full"
-                />
                 
-                <Card className="mt-6">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Model Information</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide mb-1">
-                        Category
-                      </h4>
-                      <p className="text-foreground">{model.category}</p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide mb-1">
-                        Location
-                      </h4>
-                      <p className="text-foreground">{model.location}</p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide mb-1">
-                        3D Features
-                      </h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
-                        <li>• Interactive 3D viewing</li>
-                        <li>• Zoom and rotate controls</li>
-                        <li>• Auto-rotation enabled</li>
-                        <li>• Mobile friendly</li>
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                <div className="space-y-3">
+                  <div>
+                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide mb-1">
+                      Category
+                    </h4>
+                    <p className="text-foreground">{model.category}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide mb-1">
+                      Location
+                    </h4>
+                    <p className="text-foreground">{model.location}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Interactive Features */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Interactive Features</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">•</span>
+                    <span>Rotate the model by dragging with your mouse or swiping on touch devices</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">•</span>
+                    <span>Zoom in or out using the scroll wheel or pinch gestures</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">•</span>
+                    <span>Use the controls panel to toggle visibility of different components</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">•</span>
+                    <span>Adjust lighting and environment settings for optimal viewing</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">•</span>
+                    <span>Enter fullscreen mode for immersive experience</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

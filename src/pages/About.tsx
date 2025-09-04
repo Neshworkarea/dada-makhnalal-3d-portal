@@ -10,7 +10,7 @@ export const About = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              About Dada Makhnalal
+              About Dada Makhanlal
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Exploring the legacy of Makhanlal Chaturvedi through immersive 3D experiences at MCU
@@ -31,7 +31,7 @@ export const About = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
-                  Pandit Makhanlal Chaturvedi (1889-1968), affectionately known as "Dada Makhnalal," 
+                  Pandit Makhanlal Chaturvedi (1889-1968), affectionately known as "Dada Makhanlal," 
                   was a renowned Hindi poet, writer, and freedom fighter. He played a significant role 
                   in India's independence movement and left an indelible mark on Hindi literature.
                 </p>

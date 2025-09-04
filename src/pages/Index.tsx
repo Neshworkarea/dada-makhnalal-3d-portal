@@ -37,7 +37,7 @@ const Index = () => {
                 </Badge>
                 
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-                  Dada Makhnalal <br />
+                  Dada Makhanlal <br />
                   <span className="bg-gradient-cultural bg-clip-text text-transparent">
                     in MCU Prisar
                   </span>
@@ -90,7 +90,7 @@ const Index = () => {
               <div className="absolute inset-0 bg-gradient-cultural opacity-10 rounded-2xl blur-3xl"></div>
               <img
                 src={heroImage}
-                alt="Dada Makhnalal statue in MCU campus"
+                alt="Dada Makhanlal statue in MCU campus"
                 className="relative rounded-2xl shadow-cultural w-full h-auto max-w-lg mx-auto lg:max-w-none"
               />
             </div>

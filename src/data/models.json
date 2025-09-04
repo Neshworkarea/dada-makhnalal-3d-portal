@@ -1,10 +1,10 @@
 {
   "models": [
     {
-      "id": "dada-makhnalal-statue",
-      "title": "Dada Makhnalal Statue",
-      "slug": "dada-makhnalal-statue",
-      "description": "A magnificent statue of Dada Makhnalal Chaturvedi, the renowned Hindi poet and freedom fighter, located in the MCU campus.",
+      "id": "dada-makhanlal-statue",
+      "title": "Dada Makhanlal Statue",
+      "slug": "dada-makhanlal-statue",
+      "description": "A magnificent statue of Dada Makhanlal Chaturvedi, the renowned Hindi poet and freedom fighter, located in the MCU campus.",
       "thumbnail": "/src/assets/statue-thumb.jpg",
       "modelPath": "/models/statue.glb",
       "category": "Statue",
@@ -24,7 +24,7 @@
       "id": "memorial-garden",
       "title": "Memorial Garden",
       "slug": "memorial-garden",
-      "description": "A peaceful memorial garden dedicated to Dada Makhnalal's literary legacy, featuring beautiful landscaping and cultural elements.",
+      "description": "A peaceful memorial garden dedicated to Dada Makhanlal's literary legacy, featuring beautiful landscaping and cultural elements.",
       "thumbnail": "/src/assets/garden-thumb.jpg",
       "modelPath": "/models/garden.glb",
       "category": "Landscape",

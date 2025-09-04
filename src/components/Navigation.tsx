@@ -22,7 +22,7 @@ export const Navigation = () => {
             </div>
             <div>
               <h1 className="text-lg font-bold text-foreground">
-                Dada Makhnalal
+                Dada Makhanlal
               </h1>
               <p className="text-xs text-muted-foreground">
                 MCU Prisar

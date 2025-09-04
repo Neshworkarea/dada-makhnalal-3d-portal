@@ -21,10 +21,10 @@
       "location": "Central Campus"
     },
     {
-      "id": "memorial-garden",
-      "title": "Memorial Garden",
+      "id": "Garden",
+      "title": "Garden",
       "slug": "memorial-garden",
-      "description": "A peaceful memorial garden dedicated to Dada Makhanlal's literary legacy, featuring beautiful landscaping and cultural elements.",
+      "description": "A peaceful garden dedicated to Dada Makhanlal's literary legacy, featuring beautiful landscaping and cultural elements.",
       "thumbnail": "/src/assets/garden-thumb.jpg",
       "modelPath": "/models/garden.glb",
       "category": "Landscape",

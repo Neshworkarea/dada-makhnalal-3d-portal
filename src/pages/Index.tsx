@@ -44,8 +44,7 @@ const Index = () => {
                 </h1>
                 
                 <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
-                  Explore the architectural and cultural heritage of Makhanlal Chaturvedi University 
-                  through immersive 3D models and interactive experiences.
+                  Explore Makhanlal Chaturvedi University through immersive 3D models and interactive experiences.
                 </p>
               </div>
 

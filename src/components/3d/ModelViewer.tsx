@@ -66,11 +66,21 @@ const ModelError = () => (
 export const ModelViewer = ({ modelPath, title, className }: ModelViewerProps) => {
   const [hasError, setHasError] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showControls, setShowControls] = useState(true);
   const [autoRotate, setAutoRotate] = useState(true);
   const [lightingIntensity, setLightingIntensity] = useState([0.6]);
   const [modelScale, setModelScale] = useState([1]);
   const [environment, setEnvironment] = useState<'city' | 'studio' | 'sunset' | 'dawn'>('city');
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Hide controls after 3 seconds
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowControls(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   React.useEffect(() => {
     const handleFullscreenChange = () => {
@@ -102,90 +112,20 @@ export const ModelViewer = ({ modelPath, title, className }: ModelViewerProps) =
         ref={containerRef}
         className={`relative ${isFullscreen ? 'h-screen w-screen' : 'h-[500px] md:h-[600px] lg:h-[700px]'} w-full`}
       >
-        {/* Control Panel */}
-        <div className="absolute top-4 left-4 z-10 bg-background/90 backdrop-blur-sm rounded-lg p-4 space-y-4 shadow-lg max-w-xs">
-          <div className="flex gap-2">
+        {/* Control Panel - Only Fullscreen */}
+        {showControls && (
+          <div className="absolute top-4 left-4 z-10 bg-background/90 backdrop-blur-sm rounded-lg p-3 shadow-lg animate-fade-in">
             <Button
               variant="outline"
               size="sm"
               onClick={toggleFullscreen}
-              className="flex-1"
+              className="gap-2"
             >
-              <Maximize2 className="h-4 w-4 mr-1" />
+              <Maximize2 className="h-4 w-4" />
               Fullscreen
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={resetView}
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
           </div>
-
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                Auto Rotate
-              </label>
-              <Button
-                variant={autoRotate ? "default" : "outline"}
-                size="sm"
-                onClick={() => setAutoRotate(!autoRotate)}
-                className="w-full"
-              >
-                {autoRotate ? 'On' : 'Off'}
-              </Button>
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                Lighting: {lightingIntensity[0].toFixed(1)}
-              </label>
-              <Slider
-                value={lightingIntensity}
-                onValueChange={setLightingIntensity}
-                max={2}
-                min={0.1}
-                step={0.1}
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                Scale: {modelScale[0].toFixed(1)}x
-              </label>
-              <Slider
-                value={modelScale}
-                onValueChange={setModelScale}
-                max={3}
-                min={0.5}
-                step={0.1}
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                Environment
-              </label>
-              <div className="grid grid-cols-2 gap-1">
-                {(['city', 'studio', 'sunset', 'dawn'] as const).map((env) => (
-                  <Button
-                    key={env}
-                    variant={environment === env ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setEnvironment(env)}
-                    className="text-xs capitalize"
-                  >
-                    {env}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
 
         {!hasError ? (
           <Canvas

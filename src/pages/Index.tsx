@@ -107,12 +107,11 @@ const Index = () => {
             </Badge>
             
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Explore Cultural Heritage
+              Explore the Rich Legacy of 30 years
             </h2>
             
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover the architectural marvels and cultural landmarks of MCU campus through 
-              our collection of detailed 3D models.
+              Step into the world of MCU campus with our immersive collection of detailed 3D models.
             </p>
           </div>
 

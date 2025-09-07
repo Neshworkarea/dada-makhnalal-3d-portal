@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Tag, RotateCcw, ZoomIn, ZoomOut, RotateCw, Share2, Eye, Check, Palette, Maximize2, X } from 'lucide-react';
+import { ArrowLeft, MapPin, Tag, RotateCcw, ZoomIn, ZoomOut, RotateCw, Share2, Eye, Check, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,9 +12,6 @@ export const ModelDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const model = modelsData.models.find(m => m.slug === slug);
   const [darkBackground, setDarkBackground] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const modelViewerRef = useRef<any>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   
   // Get related models (all models except current one)
   const relatedModels = modelsData.models.filter(m => m.slug !== slug);
@@ -48,48 +45,6 @@ export const ModelDetail = () => {
     });
   };
 
-  const toggleFullscreen = () => {
-    if (!isFullscreen && containerRef.current) {
-      containerRef.current.requestFullscreen().then(() => {
-        setIsFullscreen(true);
-      });
-    } else if (isFullscreen) {
-      document.exitFullscreen().then(() => {
-        setIsFullscreen(false);
-      });
-    }
-  };
-
-  const handleRotate = () => {
-    modelViewerRef.current?.rotate();
-  };
-
-  const handleZoomIn = () => {
-    modelViewerRef.current?.zoomIn();
-  };
-
-  const handleZoomOut = () => {
-    modelViewerRef.current?.zoomOut();
-  };
-
-  const handleReset = () => {
-    modelViewerRef.current?.resetView();
-  };
-
-  const handleFrontView = () => {
-    modelViewerRef.current?.setFrontView();
-  };
-
-  // Listen for fullscreen changes
-  React.useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
-
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6">
@@ -119,78 +74,56 @@ export const ModelDetail = () => {
         </div>
 
         {/* Main Layout */}
-        <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-background' : 'grid grid-cols-1 lg:grid-cols-4 gap-6'}`}>
-          {isFullscreen && (
-            <div className="absolute top-4 right-4 z-10">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggleFullscreen}
-                className="gap-2 bg-background/90 backdrop-blur-sm"
-              >
-                <X className="h-4 w-4" />
-                Exit Fullscreen
-              </Button>
-            </div>
-          )}
-          
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Left Column - 3D Viewer and Controls */}
-          <div className={`${isFullscreen ? 'h-full w-full' : 'lg:col-span-3'} space-y-4`}>
+          <div className="lg:col-span-3 space-y-4">
             {/* 3D Model Viewer */}
-            <Card className="rounded-xl shadow-lg border-0 bg-card h-full">
-              <CardContent className="p-0 h-full" ref={containerRef}>
+            <Card className="rounded-xl shadow-lg border-0 bg-card">
+              <CardContent className="p-0">
                 <ModelViewer 
-                  ref={modelViewerRef}
                   modelPath={model.modelPath}
                   title={model.title}
-                  className={`rounded-xl ${isFullscreen ? 'h-full' : 'h-[500px] md:h-[600px]'}`}
-                  darkBackground={darkBackground}
+                  className="rounded-xl h-[500px] md:h-[600px]"
                 />
               </CardContent>
             </Card>
 
             {/* Control Toolbar */}
-            {!isFullscreen && (
-              <Card className="rounded-xl shadow-md border-0 bg-card">
-                <CardContent className="p-4">
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    <Button variant="outline" size="sm" className="rounded-lg" onClick={handleRotate}>
-                      <RotateCw className="mr-2 h-4 w-4" />
-                      Rotate
-                    </Button>
-                    <Button variant="outline" size="sm" className="rounded-lg" onClick={handleZoomIn}>
-                      <ZoomIn className="mr-2 h-4 w-4" />
-                      Zoom In
-                    </Button>
-                    <Button variant="outline" size="sm" className="rounded-lg" onClick={handleZoomOut}>
-                      <ZoomOut className="mr-2 h-4 w-4" />
-                      Zoom Out
-                    </Button>
-                    <Button variant="outline" size="sm" className="rounded-lg" onClick={handleReset}>
-                      <RotateCcw className="mr-2 h-4 w-4" />
-                      Reset
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="rounded-lg"
-                      onClick={() => setDarkBackground(!darkBackground)}
-                    >
-                      <Palette className="mr-2 h-4 w-4" />
-                      {darkBackground ? 'Light' : 'Dark'} BG
-                    </Button>
-                    <Button variant="outline" size="sm" className="rounded-lg" onClick={handleFrontView}>
-                      <Eye className="mr-2 h-4 w-4" />
-                      Front View
-                    </Button>
-                    <Button variant="outline" size="sm" className="rounded-lg" onClick={toggleFullscreen}>
-                      <Maximize2 className="mr-2 h-4 w-4" />
-                      Fullscreen
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            <Card className="rounded-xl shadow-md border-0 bg-card">
+              <CardContent className="p-4">
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <Button variant="outline" size="sm" className="rounded-lg">
+                    <RotateCw className="mr-2 h-4 w-4" />
+                    Rotate
+                  </Button>
+                  <Button variant="outline" size="sm" className="rounded-lg">
+                    <ZoomIn className="mr-2 h-4 w-4" />
+                    Zoom In
+                  </Button>
+                  <Button variant="outline" size="sm" className="rounded-lg">
+                    <ZoomOut className="mr-2 h-4 w-4" />
+                    Zoom Out
+                  </Button>
+                  <Button variant="outline" size="sm" className="rounded-lg">
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Reset
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="rounded-lg"
+                    onClick={() => setDarkBackground(!darkBackground)}
+                  >
+                    <Palette className="mr-2 h-4 w-4" />
+                    {darkBackground ? 'Light' : 'Dark'} BG
+                  </Button>
+                  <Button variant="outline" size="sm" className="rounded-lg">
+                    <Eye className="mr-2 h-4 w-4" />
+                    Front View
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* About this Model */}
             <Card className="rounded-xl shadow-md border-0 bg-card">
@@ -252,8 +185,7 @@ export const ModelDetail = () => {
           </div>
 
           {/* Right Sidebar */}
-          {!isFullscreen && (
-            <div className="lg:col-span-1 space-y-4 order-first lg:order-last">
+          <div className="lg:col-span-1 space-y-4 order-first lg:order-last">
             {/* QR Code - moves below on mobile */}
             <div className="block lg:block">
               <QRCodeComponent 
@@ -314,8 +246,7 @@ export const ModelDetail = () => {
                 </div>
               </CardContent>
             </Card>
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

@@ -40,7 +40,6 @@ interface ModelViewerProps {
   modelPath: string;
   title: string;
   className?: string;
-  darkBackground?: boolean;
 }
 
 const LoadingSpinner = () => (
@@ -64,7 +63,7 @@ const ModelError = () => (
   </div>
 );
 
-export const ModelViewer = React.forwardRef<any, ModelViewerProps>(({ modelPath, title, className, darkBackground = false }, ref) => {
+export const ModelViewer = ({ modelPath, title, className }: ModelViewerProps) => {
   const [hasError, setHasError] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
@@ -107,18 +106,6 @@ export const ModelViewer = React.forwardRef<any, ModelViewerProps>(({ modelPath,
     setEnvironment('city');
   };
 
-  // Expose methods through ref
-  React.useImperativeHandle(ref, () => ({
-    rotate: () => setAutoRotate(!autoRotate),
-    zoomIn: () => setModelScale([Math.min(modelScale[0] + 0.2, 3)]),
-    zoomOut: () => setModelScale([Math.max(modelScale[0] - 0.2, 0.5)]),
-    resetView,
-    setFrontView: () => {
-      setModelScale([1]);
-      setAutoRotate(false);
-    }
-  }));
-
   return (
     <Card className={`overflow-hidden ${className}`}>
       <div 
@@ -143,11 +130,7 @@ export const ModelViewer = React.forwardRef<any, ModelViewerProps>(({ modelPath,
         {!hasError ? (
           <Canvas
             camera={{ position: [0, 0, 15], fov: 45 }}
-            style={{ 
-              background: darkBackground 
-                ? 'linear-gradient(135deg, hsl(220 13% 18%), hsl(220 14% 11%))' 
-                : 'linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)))' 
-            }}
+            style={{ background: 'linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)))' }}
             onError={() => setHasError(true)}
           >
             <ambientLight intensity={lightingIntensity[0] * 0.4} />
@@ -186,7 +169,7 @@ export const ModelViewer = React.forwardRef<any, ModelViewerProps>(({ modelPath,
       </div>
     </Card>
   );
-});
+};
 
 // Preload models for better performance
 useGLTF.preload('/models/statue.glb');

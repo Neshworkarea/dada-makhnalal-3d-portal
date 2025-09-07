@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useRef } from 'react';
+import React, { Suspense, useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Environment, ContactShadows, PresentationControls, Text, Box } from '@react-three/drei';
 import { Card } from '@/components/ui/card';
@@ -40,6 +40,15 @@ interface ModelViewerProps {
   modelPath: string;
   title: string;
   className?: string;
+  darkBackground?: boolean;
+}
+
+export interface ModelViewerRef {
+  rotate: () => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  resetView: () => void;
+  setFrontView: () => void;
 }
 
 const LoadingSpinner = () => (
@@ -63,74 +72,62 @@ const ModelError = () => (
   </div>
 );
 
-export const ModelViewer = ({ modelPath, title, className }: ModelViewerProps) => {
+export const ModelViewer = forwardRef<ModelViewerRef, ModelViewerProps>(({ modelPath, title, className, darkBackground = false }, ref) => {
   const [hasError, setHasError] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showControls, setShowControls] = useState(true);
   const [autoRotate, setAutoRotate] = useState(true);
   const [lightingIntensity, setLightingIntensity] = useState([0.6]);
   const [modelScale, setModelScale] = useState([1]);
   const [environment, setEnvironment] = useState<'city' | 'studio' | 'sunset' | 'dawn'>('city');
-  const containerRef = useRef<HTMLDivElement>(null);
+  const controlsRef = useRef<any>(null);
 
-  // Hide controls after 3 seconds
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowControls(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  React.useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement && containerRef.current) {
-      containerRef.current.requestFullscreen();
-    } else if (document.fullscreenElement) {
-      document.exitFullscreen();
+  useImperativeHandle(ref, () => ({
+    rotate: () => {
+      if (controlsRef.current) {
+        controlsRef.current.autoRotate = !controlsRef.current.autoRotate;
+        setAutoRotate(!autoRotate);
+      }
+    },
+    zoomIn: () => {
+      if (controlsRef.current) {
+        controlsRef.current.dollyIn(0.9);
+        controlsRef.current.update();
+      }
+    },
+    zoomOut: () => {
+      if (controlsRef.current) {
+        controlsRef.current.dollyOut(0.9);
+        controlsRef.current.update();
+      }
+    },
+    resetView: () => {
+      setAutoRotate(true);
+      setLightingIntensity([0.6]);
+      setModelScale([1]);
+      setEnvironment('city');
+      if (controlsRef.current) {
+        controlsRef.current.reset();
+      }
+    },
+    setFrontView: () => {
+      if (controlsRef.current) {
+        controlsRef.current.object.position.set(0, 0, 15);
+        controlsRef.current.target.set(0, 0, 0);
+        controlsRef.current.update();
+      }
     }
-  };
-
-  const resetView = () => {
-    setAutoRotate(true);
-    setLightingIntensity([0.6]);
-    setModelScale([1]);
-    setEnvironment('city');
-  };
+  }));
 
   return (
     <Card className={`overflow-hidden ${className}`}>
-      <div 
-        ref={containerRef}
-        className={`relative ${isFullscreen ? 'h-screen w-screen' : 'h-[500px] md:h-[600px] lg:h-[700px]'} w-full`}
-      >
-        {/* Control Panel - Only Fullscreen */}
-        {showControls && (
-          <div className="absolute top-4 left-4 z-10 bg-background/90 backdrop-blur-sm rounded-lg p-3 shadow-lg animate-fade-in">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleFullscreen}
-              className="gap-2"
-            >
-              <Maximize2 className="h-4 w-4" />
-              Fullscreen
-            </Button>
-          </div>
-        )}
-
+      <div className="relative w-full h-full">
         {!hasError ? (
           <Canvas
             camera={{ position: [0, 0, 15], fov: 45 }}
-            style={{ background: 'linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)))' }}
+            style={{ 
+              background: darkBackground 
+                ? 'linear-gradient(135deg, hsl(220, 13%, 18%), hsl(220, 13%, 28%))' 
+                : 'linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)))' 
+            }}
             onError={() => setHasError(true)}
           >
             <ambientLight intensity={lightingIntensity[0] * 0.4} />
@@ -145,6 +142,7 @@ export const ModelViewer = ({ modelPath, title, className }: ModelViewerProps) =
             </Suspense>
             
             <OrbitControls 
+              ref={controlsRef}
               enablePan={true} 
               enableZoom={true} 
               enableRotate={true}
@@ -169,7 +167,7 @@ export const ModelViewer = ({ modelPath, title, className }: ModelViewerProps) =
       </div>
     </Card>
   );
-};
+});
 
 // Preload models for better performance
 useGLTF.preload('/models/statue.glb');

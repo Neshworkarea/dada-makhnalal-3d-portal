@@ -49,6 +49,8 @@ export interface ModelViewerRef {
   zoomOut: () => void;
   resetView: () => void;
   setFrontView: () => void;
+  setLightingIntensity: (intensity: number) => void;
+  setEnvironment: (env: 'city' | 'studio' | 'sunset' | 'dawn') => void;
 }
 
 const LoadingSpinner = () => (
@@ -114,6 +116,12 @@ export const ModelViewer = forwardRef<ModelViewerRef, ModelViewerProps>(({ model
         controlsRef.current.target.set(0, 0, 0);
         controlsRef.current.update();
       }
+    },
+    setLightingIntensity: (intensity: number) => {
+      setLightingIntensity([intensity]);
+    },
+    setEnvironment: (env: 'city' | 'studio' | 'sunset' | 'dawn') => {
+      setEnvironment(env);
     }
   }));
 

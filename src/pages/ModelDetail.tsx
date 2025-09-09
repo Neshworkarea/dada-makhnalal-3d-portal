@@ -13,6 +13,8 @@ export const ModelDetail = () => {
   const model = modelsData.models.find(m => m.slug === slug);
   const [darkBackground, setDarkBackground] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [lightingIntensity, setLightingIntensity] = useState(0.6);
+  const [environment, setEnvironment] = useState<'city' | 'studio' | 'sunset' | 'dawn'>('city');
   const modelViewerRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -76,6 +78,20 @@ export const ModelDetail = () => {
 
   const handleFrontView = () => {
     modelViewerRef.current?.setFrontView();
+  };
+
+  const handleLightingChange = () => {
+    const newIntensity = lightingIntensity === 0.6 ? 1.0 : lightingIntensity === 1.0 ? 0.3 : 0.6;
+    setLightingIntensity(newIntensity);
+    modelViewerRef.current?.setLightingIntensity(newIntensity);
+  };
+
+  const handleEnvironmentChange = () => {
+    const environments: Array<'city' | 'studio' | 'sunset' | 'dawn'> = ['city', 'studio', 'sunset', 'dawn'];
+    const currentIndex = environments.indexOf(environment);
+    const nextEnvironment = environments[(currentIndex + 1) % environments.length];
+    setEnvironment(nextEnvironment);
+    modelViewerRef.current?.setEnvironment(nextEnvironment);
   };
 
   return (
@@ -169,11 +185,11 @@ export const ModelDetail = () => {
                       <Palette className="mr-2 h-4 w-4" />
                       {darkBackground ? 'White' : 'Dark'}
                     </Button>
-                    <Button variant="outline" size="sm" className="rounded-lg">
-                      0.6
+                    <Button variant="outline" size="sm" className="rounded-lg" onClick={handleLightingChange}>
+                      {lightingIntensity}
                     </Button>
-                    <Button variant="outline" size="sm" className="rounded-lg">
-                      BG:
+                    <Button variant="outline" size="sm" className="rounded-lg" onClick={handleEnvironmentChange}>
+                      BG: {environment}
                     </Button>
                     <Button variant="outline" size="sm" className="rounded-lg" onClick={handleFrontView}>
                       <Eye className="mr-2 h-4 w-4" />

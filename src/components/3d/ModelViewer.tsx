@@ -112,7 +112,7 @@ export const ModelViewer = forwardRef<ModelViewerRef, ModelViewerProps>(({ model
     },
     setFrontView: () => {
       if (controlsRef.current) {
-        controlsRef.current.object.position.set(0, 0, 15);
+        controlsRef.current.object.position.set(0, 0, 8);
         controlsRef.current.target.set(0, 0, 0);
         controlsRef.current.update();
       }
@@ -130,7 +130,7 @@ export const ModelViewer = forwardRef<ModelViewerRef, ModelViewerProps>(({ model
       <div className="relative w-full h-full">
         {!hasError ? (
           <Canvas
-            camera={{ position: [0, 0, 15], fov: 45 }}
+            camera={{ position: [0, 0, 8], fov: 50 }}
             style={{ 
               background: darkBackground 
                 ? 'linear-gradient(135deg, hsl(220, 13%, 18%), hsl(220, 13%, 28%))' 
@@ -154,13 +154,14 @@ export const ModelViewer = forwardRef<ModelViewerRef, ModelViewerProps>(({ model
               enablePan={true} 
               enableZoom={true} 
               enableRotate={true}
-              minDistance={8}
-              maxDistance={25}
+              minDistance={5}
+              maxDistance={15}
               autoRotate={autoRotate}
               autoRotateSpeed={0.3}
               panSpeed={0.8}
               rotateSpeed={0.8}
               zoomSpeed={1.2}
+              target={[0, 0, 0]}
             />
           </Canvas>
         ) : (
